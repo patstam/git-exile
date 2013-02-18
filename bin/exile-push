@@ -1,0 +1,32 @@
+#!/bin/bash
+bindir=.git/exile
+
+repos=$1
+
+if [ -z "$repos" ]; then
+    valid=`git config --get-regexp exile-repo* | cut -d. -f2 | sort | uniq`
+    if [ -z "$valid" ]; then
+        echo "No valid repositories found. Please configure one in your Git config."
+    else
+        echo "Please specify a repository to push. Configured repositories are:"
+        echo "$valid"
+    fi
+    exit 1
+fi
+
+for repo in $repos
+do
+    for hash in `ls $bindir/$repo`
+    do
+        LOCAL=$bindir/$repo/$hash
+        REMOTE=$hash
+        cmd=`git config exile-repo.$repo.put`
+        if [ -z "$cmd" ]; then
+            echo "No put command configured for repository $repo. Configure it with something like:"
+            echo "    git config exile-repo.$repo.put 'your-put-cmd \$SRC \$DEST'"
+        else
+            echo "Pushing $hash..."
+            eval $cmd
+        fi
+    done
+done

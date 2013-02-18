@@ -1,0 +1,21 @@
+#!/bin/bash -e
+bindir=.git/exile
+header=GitExileReference
+mkdir -p $bindir
+read -n17 magic
+if [ "$magic" == $header ]; then
+    read noop       # read the newline after the header
+    read location
+    if [ -f $bindir/$location ]; then
+        cat $bindir/$location
+    else
+        # leave the reference untouched
+        echo $header
+        echo $location
+        echo "exile: missing blob: $location" 1>&2
+    fi
+else
+    # do nothing, just pass the data through
+    echo $magic
+    cat
+fi

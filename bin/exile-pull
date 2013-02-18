@@ -1,0 +1,33 @@
+#!/bin/bash
+
+bindir=.git/exile
+header=GitExileReference
+
+if [ $# -eq 0 ]; then
+    echo "Please specify path(s) to pull. Directories will recursively updated."
+    exit 1
+fi
+
+for file in `git ls-files $@`
+do
+    filter=`git check-attr filter $file | cut -f3 -d' '`
+    if [ "$filter" == 'exile' ]; then
+        magic=`cat $file | head -c17`
+        if [ "$magic" == "$header" ]; then
+            location=`tail -n1 $file`
+            repo=${location%/*}
+            hash=${location#*/}
+
+            if [ ! -f $bindir/$repo/$hash ]; then
+                echo exile: pulling $hash from \'$repo\'
+                REMOTE=$hash
+                LOCAL=$bindir/$repo/$hash
+                eval `git config exile-repo.$repo.get`
+            fi
+
+            echo exile: refreshing \'$file\'
+            rm $file
+            git co $file
+        fi
+    fi
+done

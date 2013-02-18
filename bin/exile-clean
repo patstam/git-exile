@@ -1,0 +1,22 @@
+#!/bin/bash -e
+bindir=.git/exile
+header=GitExileReference
+file=`mktemp .git-ext.XXXXXX`
+cat > $file
+hash=`sha1sum $file | cut -f1 -d' '`
+repo=`git check-attr repo $1 | cut -f3 -d' '`
+if [ "$repo" == "unspecified" ]; then
+    echo "exile: no repository specified for '$file'." 1>&2
+    rm $file
+    exit 1
+fi
+mkdir -p $bindir/$repo
+magic=`cat $file | head -c17`
+if [ "$magic" != $header ]; then
+    cp $file $bindir/$repo/$hash
+    echo $header
+    echo $repo/$hash
+else
+    cat $file
+fi
+rm $file
