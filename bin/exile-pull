@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-for file in `git ls-files $@`
+for file in `git ls-files --error-unmatch $@`
 do
     filter=`git check-attr filter $file | cut -f3 -d' '`
     if [ "$filter" == 'exile' ]; then
