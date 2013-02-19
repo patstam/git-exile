@@ -3,7 +3,7 @@ bindir=.git/exile
 header=GitExileReference
 file=`mktemp .git-ext.XXXXXX`
 cat > $file
-hash=`sha1sum $file | cut -f1 -d' '`
+hash=`shasum -a1 $file | cut -f1 -d' '`
 repo=`git check-attr repo $1 | cut -f3 -d' '`
 if [ "$repo" == "unspecified" ]; then
     echo "exile: no repository specified for '$file'." 1>&2
