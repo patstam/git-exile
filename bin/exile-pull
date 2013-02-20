@@ -27,7 +27,7 @@ do
 
             echo exile: refreshing \'$file\'
             rm $file
-            git co $file
+            git checkout $file
         fi
     fi
 done
