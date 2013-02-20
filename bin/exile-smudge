@@ -1,5 +1,6 @@
 #!/bin/bash -e
-bindir=.git/exile
+gitroot=`git rev-parse --show-toplevel`
+bindir=$gitroot/.git/exile
 header=GitExileReference
 mkdir -p $bindir
 read -n17 magic

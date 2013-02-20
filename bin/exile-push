@@ -1,5 +1,6 @@
 #!/bin/bash
-bindir=.git/exile
+gitroot=`git rev-parse --show-toplevel`
+bindir=$gitroot/.git/exile
 
 repos=$1
 

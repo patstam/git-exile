@@ -1,6 +1,7 @@
 #!/bin/bash
 
-bindir=.git/exile
+gitroot=`git rev-parse --show-toplevel`
+bindir=$gitroot/.git/exile
 header=GitExileReference
 
 if [ $# -eq 0 ]; then
