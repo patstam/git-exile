@@ -56,6 +56,8 @@ This will look for unresolved exiled file references in the current directory an
 
 ### `push`
 
-push is used to push your local objects to the remote repository. Currently it just takes a list of repositories whose objects to push:
+push is used to push your local objects to the remote repository. It works similarly to pull, but instead pushes the appropriate objects to the remote repository. For example:
 
-    git exile push example
+    git exile push .
+
+This will look for exiled files in the current directory and all subdirectories, and push the objects corresponding to the current version to the remote repository.

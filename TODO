@@ -1,7 +1,5 @@
 - Multi-threading (on push/pull)
 - Push only missing objects (or delegate to client put command?)
-- Add 'git exile check' to scan for corrupt objects
 
 Possibilities
-- port to Python?
 - C implementation with libgit2?
