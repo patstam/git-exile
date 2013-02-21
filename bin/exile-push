@@ -1,33 +1,43 @@
-#!/bin/bash -e
-gitroot=`git rev-parse --show-toplevel`
-bindir=$gitroot/.git/exile
+#!/usr/bin/python
 
-repos=$1
+import sys
+import os
+from subprocess import call
 
-if [ -z "$repos" ]; then
-    valid=`git config --get-regexp exile-repo* | cut -d. -f2 | sort | uniq`
-    if [ -z "$valid" ]; then
-        echo "No valid repositories found. Please configure one in your Git config."
-    else
-        echo "Please specify a repository to push. Configured repositories are:"
-        echo "$valid"
-    fi
-    exit 1
-fi
+import exile
 
-for repo in $repos
-do
-    for hash in `ls $bindir/$repo`
-    do
-        LOCAL=$bindir/$repo/$hash
-        REMOTE=$hash
-        cmd=`git config exile-repo.$repo.put`
-        if [ -z "$cmd" ]; then
-            echo "No put command configured for repository $repo. Configure it with something like:"
-            echo "    git config exile-repo.$repo.put 'your-put-cmd \$SRC \$DEST'"
-        else
-            echo "Pushing $hash..."
-            eval $cmd
-        fi
-    done
-done
+corrupt = 0
+
+def pushObjectFor(file):
+    global corrupt
+
+    repo = exile.repoFor(file)
+    if len(repo) is 0:
+        print "No repository for '%s'" % (file)
+        return
+
+    # Attempt to resolve references
+    if exile.isReference(file):
+        call(['git', 'checkout', file])
+        if exile.isReference(file):
+            return
+
+    hash = exile.hashObject(file)
+    repodir = exile.rootDir() + os.sep + repo
+    command = exile.GitConfigCommand(repo, 'put')
+    object = repodir + os.sep + hash
+    if os.path.exists(object):
+        if os.path.basename(object) == exile.hashObject(object):
+            print 'Pushing object for %s (%s)...' % (file, hash)
+            vars = { 'LOCAL': object, 'REMOTE': hash }
+            command.eval(vars)
+        else:
+            print "Object for %s (%s) appears to be corrupt. Skipping..." % (file, hash)
+            corrupt += 1
+
+exile.forEachSubtree(sys.argv[1:], pushObjectFor)
+
+if corrupt is not 0:
+    print "\nPush complete, but found %d corrupt objects." % (corrupt)
+    print "Run 'git exile repair' to redownload these objects."
+    sys.exit(1)

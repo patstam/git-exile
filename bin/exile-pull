@@ -1,34 +1,24 @@
-#!/bin/bash -e
+#!/usr/bin/python
 
-gitroot=`git rev-parse --show-toplevel`
-bindir=$gitroot/.git/exile
-header=GitExileReference
+import sys
+import os
+from subprocess import call
 
-if [ $# -eq 0 ]; then
-    echo "Please specify path(s) to pull. Directories will recursively updated."
-    exit 1
-fi
+import exile
 
-for file in `git ls-files --error-unmatch $@`
-do
-    filter=`git check-attr filter $file | cut -f3 -d' '`
-    if [ "$filter" == 'exile' ]; then
-        magic=`cat $file | head -c17`
-        if [ "$magic" == "$header" ]; then
-            location=`tail -n1 $file`
-            repo=${location%/*}
-            hash=${location#*/}
+def resolveReference(file):
+    if exile.isReference(file):
+        with open(file, 'r') as data:
+            location = data.readlines()[1].strip().split('/')
+        repo = location[0]
+        hash = location[1]
+        local = exile.rootDir() + os.sep + repo + os.sep + hash
+        if not os.path.exists(local):
+            print 'Pulling %s from %s' % (hash, repo)
+            exile.get(repo, hash)
 
-            if [ ! -f $bindir/$repo/$hash ]; then
-                echo exile: pulling $hash from \'$repo\'
-                REMOTE=$hash
-                LOCAL=$bindir/$repo/$hash
-                eval `git config exile-repo.$repo.get`
-            fi
+        print 'Refreshing ' + file
+        os.remove(file)
+        call(['git', 'checkout', file])
 
-            echo exile: refreshing \'$file\'
-            rm $file
-            git checkout $file
-        fi
-    fi
-done
+exile.forEachSubtree(sys.argv[1:], resolveReference)
