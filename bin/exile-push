@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 gitroot=`git rev-parse --show-toplevel`
 bindir=$gitroot/.git/exile
 

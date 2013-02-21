@@ -1,0 +1,28 @@
+#!/usr/bin/python
+
+import sys
+import os
+from subprocess import call
+
+import exile
+
+root = exile.rootDir()
+repaired = 0
+
+for repo in exile.configuredRepositories():
+    repodir = root + os.sep + repo
+    if not os.path.isdir(repodir):
+        continue
+
+    exile.GitConfigCommand(repo, 'get')
+    for hash in os.listdir(repodir):
+        path = repodir + os.sep + hash
+        if exile.hashObject(path) != hash:
+            print "Refetching %s/%s" % (repo, hash)
+            exile.get(repo, hash)
+            repaired += 1
+
+if repaired is 0:
+    print 'All objects valid. No repairs needed.'
+else:
+    print 'Repaired %d objects.' % (repaired)
