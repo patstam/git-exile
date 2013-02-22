@@ -7,6 +7,10 @@ from subprocess import call
 import exile
 
 def resolveReference(file):
+    if not os.path.exists(file):
+        print '\'%s\' exists in the index but not in the working tree. Checking it out...' % (file)
+        call(['git', 'checkout', file])
+
     if exile.isReference(file):
         with open(file, 'r') as data:
             location = data.readlines()[1].strip().split('/')
