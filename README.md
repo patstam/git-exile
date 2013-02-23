@@ -8,6 +8,31 @@ The primary features of git-exile include:
  - configure any number of external repositories where your exiled files actually reside
  - pull down any subset of your files when you need then (no download at checkout-time)
 
+For example, see what happens when you don't have the version of the exiled files that have been committed:
+
+    $ git pull -q
+    exile: missing blob: images/d8471afaec397fc97b415f7d1a314e62af3f6885
+    exile: missing blob: images/5e49702238df3b09fc1010cb5a49cb388a2ac6ba
+    exile: missing blob: images/758da9cde0de2010a7152120a168c85e2c608817
+    $ ls -l imgs
+    -rw-r--r--  1 patstam	patstam	 66 Feb 23 14:51 image1.jpg
+    -rw-r--r--  1 patstam	patstam	 66 Feb 23 14:51 image2.jpg
+    -rw-r--r--  1 patstam	patstam	 66 Feb 23 14:51 image3.jpg
+    
+At this point you are good to go; there is no need to download anything yet unless you want to. When you need your images:
+    
+    $ git exile pull imgs
+    Pulling d8471afaec397fc97b415f7d1a314e62af3f6885 from images
+    Refreshing imgs/image1.jpg
+    Pulling 5e49702238df3b09fc1010cb5a49cb388a2ac6ba from images
+    Refreshing imgs/image2.jpg
+    Pulling 758da9cde0de2010a7152120a168c85e2c608817 from images
+    Refreshing imgs/image3.jpg
+    $ ls -l imgs
+    -rw-r--r--  1 patstam	patstam	 6572 Feb 23 14:53 image1.jpg
+    -rw-r--r--  1 patstam	patstam	 7774 Feb 23 14:53 image2.jpg
+    -rw-r--r--  1 patstam	patstam	 7304 Feb 23 14:53 image3.jpg
+
 ## How it works
 
 git-exile leverages git's [clean and smudge filter](http://www.kernel.org/pub/software/scm/git/docs/gitattributes.html) functionality to intercept binary files before they are added to the index and replace them with a small text file that tells us where the files actually reside. You can then store your files on some external datastore (like S3, another computer, or just a central location on your machine) and only pull them down when you need them. This keeps your repository small and fast, yet still allows you to track the revisions of your binary files using all the power that git offers.
