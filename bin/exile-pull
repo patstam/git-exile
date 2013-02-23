@@ -2,14 +2,13 @@
 
 import sys
 import os
-from subprocess import call
 
 import exile
 
 def resolveReference(file):
     if not os.path.exists(file):
         print '\'%s\' exists in the index but not in the working tree. Checking it out...' % (file)
-        call(['git', 'checkout', file])
+        exile.checkout(file)
 
     if exile.isReference(file):
         with open(file, 'r') as data:
@@ -23,6 +22,6 @@ def resolveReference(file):
 
         print 'Refreshing ' + file
         os.remove(file)
-        call(['git', 'checkout', file])
+        exile.checkout(file)
 
 exile.forEachSubtree(sys.argv[1:], resolveReference)

@@ -1,8 +1,10 @@
 import os
 import string
 import subprocess
+import time
 
 header = 'GitExileReference'
+rootdir = None
 
 class GitConfigCommand:
     def __init__(self, repo, action):
@@ -27,8 +29,12 @@ class GitConfigCommand:
             subprocess.call(final, shell=True)
 
 def rootDir():
-    gitroot = subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip()
-    return gitroot + os.sep + '.git/exile'
+    global rootdir
+    if rootdir is None:
+        gitroot = subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip()
+        rootdir = gitroot + os.sep + '.git/exile'
+
+    return rootdir
 
 def hashObject(path):
     return subprocess.check_output(['shasum', '-a1', path]).split()[0]
@@ -56,6 +62,14 @@ def configuredRepositories():
 def get(repo, hash):
     vars = { 'REMOTE': hash, 'LOCAL': rootDir() + os.sep + repo + os.sep + hash }
     GitConfigCommand(repo, 'get').eval(vars)
+
+def checkout(path):
+    tries = 0
+    while os.path.exists(rootDir() + os.sep + 'index.lock') and tries < 10:
+        time.sleep(0.1)
+        tries += 1
+    
+    subprocess.call(['git', 'checkout', path])
 
 def isReference(path):
     with open(path, 'r') as data:
