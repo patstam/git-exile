@@ -87,6 +87,7 @@ class TestObject:
 class ExileTestCase(unittest.TestCase):
     files = [
         TestObject('test file 1', 'one.txt'),
+        TestObject('test file 4', 'has space.txt'),
         TestObject('test file 2', 'sub/two.txt'),
         TestObject('test file 3', 'sub/dir/three.txt')
     ]
@@ -150,7 +151,7 @@ class ExileTestCase(unittest.TestCase):
         self.files[0].assertLocalMissing(self)
         self.files[0].assertWorkingMissing(self)
         # TODO: maybe arrange self.files by directory to avoid using indicies
-        for file in self.files[1:]:
+        for file in self.files[2:]:
             file.assertLocalValid(self)
             file.assertWorkingValid(self)
 
@@ -158,7 +159,7 @@ class ExileTestCase(unittest.TestCase):
         commit_and_push('sub')
 
         self.files[0].assertRemoteMissing(self)
-        for file in self.files[1:]:
+        for file in self.files[2:]:
             file.assertRemoteValid(self)
 
     def test_repair(self):

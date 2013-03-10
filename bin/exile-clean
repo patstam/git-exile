@@ -5,7 +5,7 @@ header=GitExileReference
 file=`mktemp .git-ext.XXXXXX`
 cat > $file
 hash=`shasum -a1 $file | cut -f1 -d' '`
-repo=`git check-attr repo $1 | cut -f3 -d' '`
+repo=`git check-attr repo "$1" | cut -f3 -d: | tr -d ' '`
 if [ "$repo" == "unspecified" ]; then
     echo "exile: no repository specified for '$file'." 1>&2
     rm $file

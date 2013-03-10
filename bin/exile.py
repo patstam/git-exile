@@ -45,15 +45,15 @@ def forEachSubtree(paths, callback):
         return
 
     try:
-        for file in subprocess.check_output(['git', 'ls-files', '--error-unmatch'] + paths).split():
-            filter = subprocess.check_output(['git', 'check-attr', 'filter', file]).split()[2]
+        for file in subprocess.check_output(['git', 'ls-files', '--error-unmatch'] + paths).splitlines():
+            filter = subprocess.check_output(['git', 'check-attr', 'filter', file]).split(': ')[2].strip()
             if filter == 'exile':
                 callback(file)
     except subprocess.CalledProcessError:
         pass    # called process should print appropriate message
 
 def repoFor(path):
-    return subprocess.check_output(['git', 'check-attr', 'repo', path]).split()[2]
+    return subprocess.check_output(['git', 'check-attr', 'repo', path]).split(': ')[2].strip()
 
 def configuredRepositories():
     lines = subprocess.check_output(['git', 'config', '--get-regexp', 'exile-repo.*.*']).splitlines()
