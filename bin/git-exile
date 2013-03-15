@@ -1,13 +1,10 @@
-#!/bin/bash
+#!/usr/bin/python
 
-function usage()
-{
-    echo usage
-    exit 1
-}
+import sys
+import subprocess
 
-if [ $# -lt 1 ]; then
-    usage
-fi
+if len(sys.argv) < 2:
+    print "usage: git exile COMMAND [ARGS]"
+    sys.exit(1)
 
-exec exile-$@
+subprocess.call(['exile-' + sys.argv[1]] + sys.argv[2:])
