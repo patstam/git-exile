@@ -13,7 +13,6 @@ if [ "$magic" == $header ]; then
         # leave the reference untouched
         echo $header
         echo $location
-        echo "exile: missing blob: $location" 1>&2
     fi
 else
     # do nothing, just pass the data through
