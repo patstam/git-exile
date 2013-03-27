@@ -127,6 +127,18 @@ class ExileTestCase(unittest.TestCase):
             file.assertLocalValid(self)
             file.assertWorkingValid(self)
 
+    def test_pull_clean(self):
+        commit_and_push()
+        for file in self.files:
+            os.remove(file.path)
+        shutil.rmtree('.git/exile')
+
+        call(['git', 'checkout', '.'])
+        call(['git', 'exile', 'pull', '.'])
+        for file in self.files:
+            file.assertLocalValid(self)
+            file.assertWorkingValid(self)
+
     def test_pull_working(self):
         commit_and_push()
         for file in self.files:

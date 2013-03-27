@@ -60,7 +60,12 @@ def configuredRepositories():
     return set(line.split()[0].split('.')[1] for line in lines)
 
 def get(repo, hash):
-    vars = { 'REMOTE': hash, 'LOCAL': rootDir() + os.sep + repo + os.sep + hash }
+    repodir = rootDir() + os.sep + repo
+    try:
+        os.makedirs(repodir)
+    except:
+        pass
+    vars = { 'REMOTE': hash, 'LOCAL': repodir + os.sep + hash }
     GitConfigCommand(repo, 'get').eval(vars)
 
 def checkout(path):
