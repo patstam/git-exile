@@ -17,7 +17,7 @@ def pushObjectFor(file):
 
     # Attempt to resolve references
     if exile.isReference(file):
-        exile.checkout(file)
+        exile.checkout(file, True)
         if exile.isReference(file):
             return
 

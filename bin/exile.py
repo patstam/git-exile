@@ -68,12 +68,17 @@ def get(repo, hash):
     vars = { 'REMOTE': hash, 'LOCAL': repodir + os.sep + hash }
     GitConfigCommand(repo, 'get').eval(vars)
 
-def checkout(path):
+def checkout(path, force=False):
     tries = 0
     while os.path.exists(rootDir() + os.sep + 'index.lock') and tries < 10:
         time.sleep(0.1)
         tries += 1
-    
+   
+    if force: 
+        try: 
+            os.remove(path)
+        except:
+            pass
     subprocess.call(['git', 'checkout', path])
 
 def isReference(path):
