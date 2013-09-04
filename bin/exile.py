@@ -44,13 +44,14 @@ def forEachSubtree(paths, callback):
         print "No paths specified."
         return
 
-    try:
-        for file in subprocess.check_output(['git', 'ls-files', '--error-unmatch'] + paths).splitlines():
-            filter = subprocess.check_output(['git', 'check-attr', 'filter', file]).split(': ')[2].strip()
-            if filter == 'exile':
-                callback(file)
-    except subprocess.CalledProcessError:
-        pass    # called process should print appropriate message
+    for path in paths:
+        try:
+            for file in subprocess.check_output(['git', 'ls-files', '--error-unmatch', path]).splitlines():
+                filter = subprocess.check_output(['git', 'check-attr', 'filter', file]).split(': ')[2].strip()
+                if filter == 'exile':
+                    callback(file)
+        except subprocess.CalledProcessError:
+            pass    # called process should print appropriate message
 
 def repoFor(path):
     return subprocess.check_output(['git', 'check-attr', 'repo', path]).split(': ')[2].strip()

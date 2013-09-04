@@ -167,6 +167,19 @@ class ExileTestCase(unittest.TestCase):
             file.assertLocalValid(self)
             file.assertWorkingValid(self)
 
+    def test_pull_invalid(self):
+        commit_and_push()
+        for file in self.files:
+            os.remove(file.object)
+            os.remove(file.path)
+
+        call(['git', 'checkout', '.'])
+        # first path should error out, but should continue to second
+        call(['git', 'exile', 'pull', 'expectedtofail', '.'])
+        for file in self.files:
+            file.assertLocalValid(self)
+            file.assertWorkingValid(self)
+
     def test_push_subdir(self):
         commit_and_push('sub')
 
