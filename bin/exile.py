@@ -1,4 +1,5 @@
 import os
+import sys
 import string
 import subprocess
 import time
@@ -37,7 +38,12 @@ def rootDir():
     return rootdir
 
 def hashObject(path):
-    return subprocess.check_output(['shasum', '-a1', path]).split()[0]
+    # No shasum on windows, but there is sha1sum in GNU tools for Windows;
+    # prepends backslash if passed path that contains backslashes, so need to skip it
+    if sys.platform == 'win32':
+        return subprocess.check_output(['sha1sum', os.path.abspath(path)]).split()[0][1:]
+    else:
+        return subprocess.check_output(['shasum', '-a1', path]).split()[0]
 
 def forEachSubtree(paths, callback):
     if len(paths) is 0: 
