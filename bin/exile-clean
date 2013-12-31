@@ -1,6 +1,13 @@
 #!/bin/bash -e
 gitroot=`git rev-parse --show-toplevel`
-bindir=$gitroot/.git/exile
+gitdir=$gitroot/.git
+if [ -f "$gitdir" ]; then
+    realgit=`cat $gitdir | awk '{split($0,array,":")} END{print array[2]}' | tr -d ' '`
+    bindir=$gitroot/$realgit/exile
+else
+    bindir=$gitdir/exile
+fi
+
 header=GitExileReference
 file=`mktemp .git-ext.XXXXXX`
 cat > $file

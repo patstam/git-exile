@@ -33,7 +33,14 @@ def rootDir():
     global rootdir
     if rootdir is None:
         gitroot = subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip()
-        rootdir = gitroot + os.sep + '.git/exile'
+        gitdir = os.path.join(gitroot, '.git')
+        if os.path.isdir(gitdir):
+            rootdir = os.path.join(gitdir, 'exile')
+        else:
+            # If the current repo is submodule, .git is a text file that contains the location of the actual .git directory
+            # i.e. gitdir: /path/to/real/.git
+            with open(gitdir) as f:
+                rootdir = os.path.join(gitroot, f.read().split(':')[1].strip(), 'exile')
 
     return rootdir
 
