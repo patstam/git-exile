@@ -1,5 +1,7 @@
 # git-exile
 
+_**NOTE**: git-exile has some inherent scalability problems due to its dependence on Git clean and smudge filters. If performance is important to you, you may consider using [exile](https://github.com/patstam/exile) instead._
+
 git-exile aims to provide another option for dealing with binary files in Git. It was inspired by [git-bin](https://github.com/Mighty-M/git-bin), and similarly uses smudge and clean filters to prevent binary files from being checked in to the repository.
 
 The primary features of git-exile include:
